@@ -123,7 +123,7 @@ The main hurdle for running things locally is that i still want to use public gi
 
 Customer Data Flow:
 - Customer uses a basic frontend that i created to take in name, motto and a purchase code.
-- Customer submits thier infromation
+- Customer submits thier information
     - key is authenticated
     - Webserver kicks off a call to my github issues where customer info is populated in to the issue
         - Github action is created based on a special create tag
@@ -185,13 +185,10 @@ flowchart TD
 ```
 
 ```text
-Draw your customer onboarding flow here...
-
-Purchase -> Pipeline -> Personalized Page
 
 Customer Journey:
 1. Customer completes purchase
-2. System captures company name + motto  
+2. System captures company name + motto
 3. Pipeline generates personalized page
 4. Customer sees "Welcome [Company], [Motto]" page
 
