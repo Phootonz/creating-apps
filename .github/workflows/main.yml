@@ -1,0 +1,4 @@
+name: create_customer_app_local
+on:
+  issues:
+    types: [openend]
