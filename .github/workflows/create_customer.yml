@@ -3,3 +3,15 @@ on:
   issues:
     types: [opened]
 
+jobs:
+  build: # Define a job named 'build'
+    runs-on: ubuntu-latest # Specify the runner environment
+
+    steps:
+      - uses: actions/checkout@v4 # Checkout the repository code
+      - name: Run a one-line script
+        run: echo Hello, GitHub Actions! # Execute a simple command
+      - name: Run a multi-line script
+        run: |
+          echo Add other steps here
+          echo For example, build commands or tests
