@@ -19,7 +19,7 @@
       };
 
       // Connect to SSE stream
-      const es = new EventSource("http://localhost:5000/events");
+      const es = new EventSource("/get-waypoints");
       es.onopen = () => log("[SSE] connected");
       es.onmessage = (evt) => {
         // default 'message' events

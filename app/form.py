@@ -2,9 +2,7 @@ import os
 import json
 from typing import Annotated
 from fastapi import FastAPI, Request, Depends, Form, HTTPException, status
-from fastapi.responses import PlainTextResponse
-from fastapi.responses import HTMLResponse
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from kubernetes import client, config
@@ -82,7 +80,7 @@ async def waypoints_generator():
     waypoints = json.load(waypoints)
     for waypoint in waypoints[0: 10]:
         data = json.dumps(waypoint)
-        yield f"event: locationUpdate\ndata: {data}\n\n"
+        yield f"data: {data}\n\n"
         await sleep(1)
 
 @app.get("/get-waypoints")
@@ -93,3 +91,8 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse('static/favicon.ico')
