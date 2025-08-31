@@ -118,27 +118,39 @@ welcome!), or planning notes.*
 ### Planning Notes
 
 ```text
-Add your thoughts here...
+I want to run all the infrustructure at a cost of zero dollars. The best way to do that is host the infrustructure on a machine i already own. I think my computer could probably handle 100 very small containers.
+The main hurdle for running things locally is that i still want to use public github in some form to show i can create and use github actions. So i will use ngrok tunnels and some basic auth security so that the site on my machine doesn't get destroyed by the public internet. I also want to publically (at least briefly) host each of the new websites i make for customers. To do that i will need to update the ingress running for my web application dynamically as i spin up new pods for customer services.
 
 Customer Data Flow:
-- How does customer purchase data reach the pipeline?
-- Where do we store company name and motto?
-- 
+- Customer uses a basic frontend that i created to take in name, motto and a purchase code.
+- Customer submits thier infromation
+    - key is authenticated
+    - Webserver kicks off a call to my github issues where customer info is populated in to the issue
+        - Github action is created based on a special create tag
+        - Action calls a deployment script with customer info as args
+- User submission and page is updated with latest deployment status using SSE
+- *If i have time show a queue for how far back the current customer is
 
 Pipeline Trigger Ideas:
-- API webhook from purchase system?
-- Queue-based processing?
-- 
+- Trigger the pipline thourgh github issues
+- use issues as an effective queue 
+- isolate the action to only run one at a time
 
 Technology Choices:
-- Database for customer data?
-- Pipeline orchestration tool?
-- 
+- Github actions for the pipeline tool, because of public availabilty and i have some familiarity with them
+- The customer data set is very small, composed of a two elements, so i'll use yaml file for persistance
+- I'll use fastapi for the webserver layer, because i've been learning it at work... so two birds.
+- I'll use tailwind for styling, because there are a lot of examples and it is super simple.
+- I'll use raw javascript for the frontend, because there is not a lot of frontend
+- I will use docker desktop's kubernetes implimentation, because that is what i have installed
+- I will use ngrok for tunnels because i have used it in the past a tiny bit and cloudflare tunnels were slightly more annoying to configure.
 
 Challenges to Address:
+- Running this for 0$
+- How do i safely (mostly) expose my local application to the internet
+- How do i validate create requests?
 - What if onboarding fails mid-process?
 - How to handle duplicate company names?
-- 
 
 ```
 
