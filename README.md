@@ -151,10 +151,26 @@ Challenges to Address:
 - How do i validate create requests?
 - What if onboarding fails mid-process?
 - How to handle duplicate company names?
+- hopefully i don't run out of free action runs on public github
 
 ```
 
 ### Architecture Sketches
+
+Sequence Diagram of data flow
+
+```mermaid
+sequenceDiagram
+    participant c as cutomer
+    participant w as webserver
+    participant ga as github actions
+    participant k as kubernetes
+    c->>+w: /post
+    w->>+ga: webhook
+    w-->>+c: sse
+    ga->>+w: /deploy
+    w->>+k: helm deploy
+```
 
 ```text
 Draw your customer onboarding flow here...

@@ -1,5 +1,6 @@
 import os
 import json
+import yaml
 from typing import Annotated
 from fastapi import FastAPI, Request, Depends, Form, HTTPException, status
 from fastapi.responses import StreamingResponse, HTMLResponse, FileResponse
@@ -7,8 +8,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from kubernetes import client, config
 from asyncio import sleep
+from github import Github
 from .models.forms import CreateApp
+from dotenv import load_dotenv
 
+load_dotenv()
+
+GITHUB_TOKEN = os.getenv("GITHUB_PAT")
+REPO_OWNER = "Phootonz"
+REPO_NAME = "creating-apps"
+TEMPLATE_FILE_NAME = "create-customer-template.md" 
+
+FAK = os.getenv("FORM_APP_KEY")
+NURL = os.getenv("NGROK_URL")
 app = FastAPI()
 
 app.add_middleware(
@@ -19,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-FAK = os.getenv("FORM_APP_KEY")
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -32,6 +44,29 @@ async def require_form_passkey(create_app: CreateApp ):
         )
     return True
 
+def github_webhook(create_app: CreateApp):
+    body = {
+        "url": NURL,
+        "name": create_app.name,
+        "motto": create_app.motto
+    }
+    
+    body = yaml.safe_dump(body)
+    g = Github(GITHUB_TOKEN)
+    repo = g.get_user(REPO_OWNER).get_repo(REPO_NAME)
+    title = f"Creating an instance for {create_app.name}" # Default title
+    try:
+        issue = repo.create_issue(
+            title=title,
+            body=body, 
+            labels=["create-customer"]
+        )
+    except Exception:
+        print(f"Failed to create issue {body}")
+        return False
+    print(f"Successfully created issue: {issue.html_url}")
+    return True
+
 
 @app.get("/")
 async def create_form(request: Request):
@@ -41,6 +76,9 @@ async def create_form(request: Request):
 @app.post("/", response_class=HTMLResponse)
 async def create_submit(request: Request, create_app: CreateApp = Form(...)):
     await require_form_passkey(create_app)
+    if not github_webhook(create_app):
+        #return a fai lure response
+        return
     return templates.TemplateResponse(
         "subbed_form.html", 
         context={"request": request, "name": create_app.name}
@@ -74,6 +112,8 @@ async def instances():
             status_code=500,
             detail=f"Failed to list deployments: {e}",
         )
+
+
 
 async def waypoints_generator():
     waypoints = open('waypoints.json')
