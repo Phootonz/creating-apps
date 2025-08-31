@@ -157,7 +157,7 @@ Challenges to Address:
 
 ### Architecture Sketches
 
-Sequence Diagram of data flow
+Sequence diagram of data flow
 
 ```mermaid
 sequenceDiagram
@@ -170,6 +170,18 @@ sequenceDiagram
     w-->>+c: sse
     ga->>+w: /deploy
     w->>+k: helm deploy
+```
+
+Flow chart of the data flow
+
+```mermaid
+flowchart TD
+    A[Customer Purchase] -->|"/ (post)" | B(Fastapi Server)
+    B --> | Create Github Issue |C{Github Action}
+    B ---> | SSE | A
+    C -->|Customer Info| D[deploy script]
+    D -->| /deploy  | B
+    B --> E(Kubernetes)
 ```
 
 ```text
