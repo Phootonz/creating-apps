@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "forms"
+version = "0.1.0"
+description = ""
+authors = ["Jeff Snyder <tc.photon@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+kubernetes = "^33.1.0"
+pyngrok = "^7.3.0"
+ngrok = "^1.5.1"
+fastapi = {extras = ["standard"], version = "^0.116.1"}
+pydantic = "^2.11.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

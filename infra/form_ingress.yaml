@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+spec:
+  ingressClassName: nginx 
+  rules:
+    - host: create.customer.apps.local # The hostname you will use to access the service
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: create-customer-sites-service # Name of your Kubernetes Service
+                port:
+                  number: 8080 # Port of the Service

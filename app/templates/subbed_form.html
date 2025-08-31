@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Simple Web Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex flex-col justify-center items-center h-screen">
+    <div class="w-full max-w-sm">
+        Give us a minute! We are created a new instance named: <span class="bg-cyan-200 rounded-md px-1">{{name}}</span>
+    </div>
+        <h1>Webhook Events</h1>
+    <pre id="log"></pre>
+    <script>
+      const log = (msg) => {
+        const pre = document.getElementById("log");
+        pre.textContent += msg + "\n";
+      };
+
+      // Connect to SSE stream
+      const es = new EventSource("http://localhost:5000/events");
+      es.onopen = () => log("[SSE] connected");
+      es.onmessage = (evt) => {
+        // default 'message' events
+        try {
+          const data = JSON.parse(evt.data);
+          log(`[event] ${JSON.stringify(data)}`);
+        } catch {
+          log(`[event-raw] ${evt.data}`);
+        }
+      };
+      es.addEventListener("hello", () => log("[SSE] hello event"));
+      es.onerror = (err) => log("[SSE] error (will auto-retry)");
+    </script>
+</body>
+
+</html>

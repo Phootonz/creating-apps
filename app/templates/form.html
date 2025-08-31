@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Create Your Instance!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex flex-col justify-center items-center h-screen bg-white dark:bg-gray-900">
+    <section class="bg-white dark:bg-gray-900">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16">
+            <h1
+                class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+                Create your SAS workspace</h1>
+            <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48 dark:text-gray-400">You're almost there!</p>
+            <div class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0">
+                <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 text-left" method="POST" action="/">
+                    <div class="mb-4">
+                        <label class="block text-gray-800 text-sm font-bold mb-2" for="iname">
+                            Give us the name of your company
+                        </label>
+                        <input
+                            class="shadow appearance-none border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="name" type="text" name="name" placeholder="SAS..." maxlength="255" minlength="1" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-800 text-sm font-bold mb-2" for="motto">
+                            What single sentence makes your business, your business?
+                        </label>
+                        <input
+                            class="shadow appearance-none border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="motto" type="text" name="motto"
+                            placeholder="I'm lovin' it (but not the trademarked one)" maxlength="1024" minlength="3" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-800 text-sm font-bold mb-2" for="creds">
+                            Product key
+                        </label>
+                        <input
+                            class="shadow appearance-none border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="key" type="password" name="key" placeholder="FF1Y-3BFC-YOUR-KEY" maxlength="28" minlength="28">
+                    </div>
+
+                    <div class="flex items-center justify-end">
+                        <button
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            type="submit" required>
+                            Purchase
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <p class="text-center text-gray-500 text-xs">
+                &copy;2025 Jeff's Cool Form. All rights reserved.
+            </p>
+        </div>
+    </section>
+</body>
+
+</html>

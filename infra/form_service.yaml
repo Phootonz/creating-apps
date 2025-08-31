@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: create-customer-sites-service
+spec:
+  selector:
+    app: create-customer-sites  # should match labels on your Pod/Deployment
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080        # external port (service port)
+      targetPort: 8080  # internal port (container port)
+  type: ClusterIP  # or NodePort / LoadBalancer depending on how you want to expose it

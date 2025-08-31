@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: create-customer-sites
+  labels:
+    app: create-customer-sites
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: create-customer-sites
+  template:
+    metadata:
+      labels:
+        app: create-customer-sites
+    spec:
+      containers:
+      - name: create-customer-sites
+        image: create-customer-sites:5
+        ports:
+        - containerPort: 8080
