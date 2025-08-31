@@ -1,0 +1,27 @@
+name: Create Customer Template
+about: Create a new customer
+title: "[Customer Creation]"
+labels: ["create-customer"]
+assignees: ''
+body:
+  - type: input
+    id: url
+    attributes:
+      label: url
+      placeholder: www.whereisthishosted.com
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: name
+      placeholder: SAS
+    validations:
+      required: true
+  - type: input
+    id: motto
+    attributes:
+      label: motto
+      placeholder: "The Power to Know®"
+    validations:
+      required: true
