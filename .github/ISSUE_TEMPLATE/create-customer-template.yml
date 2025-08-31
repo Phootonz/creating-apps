@@ -1,8 +1,9 @@
 name: Create Customer Template
-about: Create a new customer
+description: Create a new customer
 title: "[Customer Creation]"
 labels: ["create-customer"]
-assignees: ''
+assignees: 
+  - ''
 body:
   - type: input
     id: url
