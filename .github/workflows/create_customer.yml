@@ -1,11 +1,12 @@
 name: create_customer_app_local
 on:
   issues:
-    types: [opened]
+    types: [labeled]
 
 jobs:
   build: # Define a job named 'build'
     runs-on: ubuntu-latest # Specify the runner environment
+    if: contains(github.event.issue.labels.*.name, 'create-customer')
     concurrency: 
       group: my-deployment-group
       cancel-in-progress: false 
