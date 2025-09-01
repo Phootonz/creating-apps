@@ -143,7 +143,7 @@ Pipeline Trigger Ideas:
 
 Technology Choices:
 - Github actions for the pipeline tool, because of public availabilty and i have some familiarity with them
-- The customer data set is very small, composed of a two elements, so i'll use yaml file for persistance
+- The customer data set is very small. so i'll use sqlite file for persistance
 - I'll use fastapi for the webserver layer, because i've been learning it at work... so two birds.
 - I'll use tailwind for styling, because there are a lot of examples and it is super simple.
 - I'll use raw javascript for the frontend, because there is not a lot of frontend

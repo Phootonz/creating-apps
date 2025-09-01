@@ -109,7 +109,8 @@ async def create_submit(request: Request, create_app: CreateApp = Form(...)):
 @app.post("/deploy", response_class=JSONResponse)
 async def create_deployment(request: Request, create_app: CreateApp, db: Session = Depends(get_db)):
     await require_form_passkey(create_app)
-    customer = db.query(Customer).filter_by(name=create_app.name).first()
+    nice_name = create_app.name.replace(" ", "").lower()
+    customer = db.query(Customer).filter_by(nice_name=nice_name).first()
     client = HelmClient()
     
     name = create_app.name
@@ -136,7 +137,8 @@ async def create_deployment(request: Request, create_app: CreateApp, db: Session
 @app.post("/status", response_class=JSONResponse, status_code=status.HTTP_204_NO_CONTENT)
 async def create_deployment(request: Request, state: Status, db: Session = Depends(get_db)):
     await require_form_passkey(state)
-    customer = db.query(Customer).filter_by(name=state.name).first()
+    nice_name = state.name.replace(" ", "").lower()
+    customer = db.query(Customer).filter_by(nice_name=nice_name).first()
     if not customer:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -158,11 +160,11 @@ async def create_deployment(request: Request, state: Status, db: Session = Depen
 @app.post("/create", response_class=JSONResponse, status_code=status.HTTP_201_CREATED)
 async def create_deployment(request: Request, create_app: CreateApp, db: Session = Depends(get_db)):
     await require_form_passkey(create_app)
-    customer = db.query(Customer).filter_by(name=create_app.name).first()
+    nice_name = create_app.name.replace(" ", "").lower()
+    customer = db.query(Customer).filter_by(name=nice_name).first()
     if customer:
         return JSONResponse(create_app.model_dump(exclude=['key']), status_code=status.HTTP_208_ALREADY_REPORTED)
-    
-    customer = Customer(name=create_app.name, motto=create_app.motto, status='db updated')
+    customer = Customer(name=create_app.name, motto=create_app.motto, status='db updated', nice_name=nice_name)
     db.add(customer)
     try:
         db.commit()
@@ -173,7 +175,7 @@ async def create_deployment(request: Request, create_app: CreateApp, db: Session
             detail="Some info was incorrect, maybe the customer already exists",
         )
     db.refresh(customer) 
-    return JSONResponse(create_app.model_dump(exclude=['key']))
+    return JSONResponse(create_app.model_dump(exclude=['key']), status_code=status.HTTP_201_CREATED)
 
 
 @app.get("/instances")
@@ -207,13 +209,16 @@ async def instances():
 async def deployment_status(name, db: Session):
     try:
         for _ in range(60):
-                customer = db.query(Customer).filter_by(name=name).first()
+                customer = db.query(Customer).filter_by(nice_name=name).first()
                 state = {"status": "initilizing"}
                 if customer:
                     state["status"] = customer.status
+                    
                 yield f"data: {json.dumps(state)}\n\n"
                 if customer:
                     db.refresh(customer)
+                if customer and customer.status == 'deployed':
+                    return
                 await sleep(3)
     finally:
         db.close()
