@@ -210,7 +210,7 @@ async def deployment_status(name, db: Session):
     try:
         for _ in range(60):
                 customer = db.query(Customer).filter_by(nice_name=name).first()
-                state = {"status": "initilizing"}
+                state = {"status": "initializing"}
                 if customer:
                     state["status"] = customer.status
                     
