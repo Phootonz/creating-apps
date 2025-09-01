@@ -114,6 +114,7 @@ async def create_deployment(request: Request, create_app: CreateApp, db: Session
     except Exception:
         return JSONResponse({"error": "Only a single customer with the same name can exist", "code": 1})
     db.refresh(customer)
+    db.close()
     return JSONResponse(create_app.model_dump(exclude=['key']))
 
 @app.post("/status", response_class=JSONResponse, status_code=status.HTTP_204_NO_CONTENT)
@@ -136,6 +137,7 @@ async def create_deployment(request: Request, state: Status, db: Session = Depen
             detail="unable to update the state",
         )
     db.refresh(customer)
+    db.close()
     return JSONResponse(state.model_dump(exclude=['key']))
 
 @app.post("/create", response_class=JSONResponse, status_code=status.HTTP_201_CREATED)
@@ -151,7 +153,8 @@ async def create_deployment(request: Request, create_app: CreateApp, db: Session
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Some info was incorrect, maybe the customer already exists",
         )
-    db.refresh(customer)
+    db.refresh(customer) 
+    db.close()   
     return JSONResponse(create_app.model_dump(exclude=['key'])), 201
 
 
@@ -183,16 +186,19 @@ async def instances():
             detail=f"Failed to list deployments: {e}",
         )
 
-async def deployment_status(name, db):
-    for _ in range(200):
+async def deployment_status(name, db: Session):
+    for _ in range(60):
         customer = db.query(Customer).filter_by(name=name).first()
         state = {"status": "initilizing"}
         if customer:
             print(customer.status)
             state["status"] = customer.status
         yield f"data: {json.dumps(state)}\n\n"
-        db.refresh(customer)
-        await sleep(3)
+        if customer:
+            db.refresh(customer)
+        await sleep(5)
+    db.close()
+
 
 @app.get("/deployment/{name}")
 async def deployment(name,  db: Session = Depends(get_db)):

@@ -9,7 +9,7 @@ def update_status(url, name, status, secret):
     }
     headers = {'Content-Type':'application/json'}
     print(data)
-    update_app = requests.post(f'{url}/status', data=data, headers=headers, verify=False)
+    update_app = requests.post(f'{url}/status', json=data, headers=headers, verify=False)
     update_app.raise_for_status()
     return update_app
 
@@ -22,7 +22,7 @@ def create_company(url, name, motto, secret):
     headers = {'Content-Type':'application/json'}
     print(url)
     print(data)
-    create_company = requests.post(f'{url}/create', data=data, headers=headers)
+    create_company = requests.post(f'{url}/create', json=data, headers=headers)
     create_company.raise_for_status()
     print("company created in db")
     return create_company
