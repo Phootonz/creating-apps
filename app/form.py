@@ -162,7 +162,7 @@ async def create_deployment(request: Request, create_app: CreateApp, db: Session
     await require_form_passkey(create_app)
     customer = db.query(Customer).filter_by(name=create_app.name).first()
     if customer:
-        return JSONResponse(create_app.model_dump(exclude=['key'])), 200
+        return JSONResponse(create_app.model_dump(exclude=['key']), status_code=status.HTTP_208_ALREADY_REPORTED)
     
     customer = Customer(name=create_app.name, motto=create_app.motto, status='db updated')
     db.add(customer)
@@ -175,7 +175,7 @@ async def create_deployment(request: Request, create_app: CreateApp, db: Session
             detail="Some info was incorrect, maybe the customer already exists",
         )
     db.refresh(customer) 
-    return JSONResponse(create_app.model_dump(exclude=['key'])), 201
+    return JSONResponse(create_app.model_dump(exclude=['key']))
 
 
 @app.get("/instances")
