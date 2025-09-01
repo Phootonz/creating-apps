@@ -17,6 +17,7 @@ if __name__ == "__main__":
     secret = sys.argv[3]
 
     tokens = issue_body.split('\n')
+    print(tokens)
     try:
         app_params = {item.split(':')[0]:item.split(':')[1].strip() for item in tokens}
     except IndexError:
