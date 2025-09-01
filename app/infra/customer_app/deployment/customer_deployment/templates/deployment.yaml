@@ -22,6 +22,11 @@ spec:
                 configMapKeyRef:
                   name: {{ include "customer_deployment.fullname" . }}-configmap
                   key: customer_name
+            - name: CUSTOMER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "customer_deployment.fullname" . }}-configmap
+                  key: customer_url
             - name: CUSTOMER_MOTTO
               valueFrom:
                 configMapKeyRef:

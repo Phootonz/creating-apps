@@ -4,4 +4,5 @@ metadata:
   name: {{ include "customer_deployment.fullname" . }}-configmap
 data:
   customer_name: {{ .Values.config.name }}
+  customer_url: {{ .Values.config.url_name }}
   customer_motto: {{ .Values.config.motto }}
