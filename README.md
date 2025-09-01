@@ -135,11 +135,9 @@ Pipeline Trigger Ideas:
 - Trigger the pipline thourgh github issues
 - use issues as an effective queue 
 - isolate the action to only run one at a time
-- action will trigger a build of the latest image on my machine
-- action will generate a new helm chart on my machine
-- action will update the ingress
-- action will deploy new helm
-- update status db on each step
+- action will create a customer in the db
+- action will create a new helm deployment using issue details as input
+- action will update deployed status in customer db
 
 Technology Choices:
 - Github actions for the pipeline tool, because of public availabilty and i have some familiarity with them
@@ -157,6 +155,7 @@ Challenges to Address:
 - What if onboarding fails mid-process?
 - How to handle duplicate company names?
 - hopefully i don't run out of free action runs on public github
+- communicating state back to the user
 
 ```
 
