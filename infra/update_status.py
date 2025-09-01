@@ -25,7 +25,7 @@ if __name__ == "__main__":
         for item in tokens:
             if ':' in item:
                 key,value = item.split(":", 1)
-                app_params[key] = value
+                app_params[key.strip()] = value.strip()
     except IndexError:
         print("Some of your info was messed up")
         # output to error stream
