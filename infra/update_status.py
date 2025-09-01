@@ -20,6 +20,8 @@ def create_company(url, name, motto, secret):
         "key": secret
     }
     headers = {'Content-Type':'application/json'}
+    print(url)
+    print(data)
     create_company = requests.post(f'{url}/create', data=data, headers=headers)
     create_company.raise_for_status()
     print("company created in db")
