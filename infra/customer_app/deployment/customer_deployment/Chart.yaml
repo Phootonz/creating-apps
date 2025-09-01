@@ -1,6 +1,6 @@
 apiVersion: v2
-name: customer_deployment
-description: A Helm chart for Kubernetes
+name: customer-deployment
+description: A chart to deploy a new instance of a customer app
 
 # A chart can be either an 'application' or a 'library' chart.
 #
