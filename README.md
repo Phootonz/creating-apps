@@ -157,6 +157,12 @@ Challenges to Address:
 - hopefully i don't run out of free action runs on public github
 - communicating state back to the user
 
+Key Objectives Addressed:
+- 2: I created a main application that deploys customer apps. It stores data in mainly sqlite. The customer apps just use a configmap configmaps. 
+- 3: For this project i used pydantic for data validation. I used sqlite to store customer details and status. I created a local kube secret for app secrets. 
+- 5: I created a github workflow to kick off site creation using issues. I ran out of time but would have had that pipline insert a bad status for the customer if something went wrong
+- 8: I used configmaps, secrets and helm. Secrets in the main app and configmaps and helm to deploy the customer apps.
+
 ```
 
 ### Architecture Sketches
