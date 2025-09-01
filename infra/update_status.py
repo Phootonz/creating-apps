@@ -19,7 +19,11 @@ if __name__ == "__main__":
     tokens = issue_body.split('\n')
     print(tokens)
     try:
-        app_params = {item.split(':')[0]:item.split(':')[1].strip() for item in tokens}
+        app_params = {}
+        for item in tokens:
+            if ':' in item:
+                key,value = item.split(":", 1)
+                app_params[key] = value
     except IndexError:
         print("Some of your info was messed up")
         # output to error stream
