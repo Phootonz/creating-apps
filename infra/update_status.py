@@ -29,7 +29,7 @@ if __name__ == "__main__":
     status = sys.argv[1]
     issue_body = sys.argv[2]
     secret = sys.argv[3]
-    mode = sys.argv[3]
+    mode = sys.argv[4]
 
     tokens = issue_body.split('\n')
     print(f"issue tokens: {tokens}")
