@@ -24,7 +24,7 @@ app.add_middleware(
 
 templates = Jinja2Templates(directory="templates")
 
-@app.get(f"/customer/{os.getenv('CUSTOMER_NAME').replace(" ", "")}")
+@app.get(f"/customer/{os.getenv('CUSTOMER_NAME').replace(" ", "").lower()}")
 async def create_form(request: Request):
     return templates.TemplateResponse("landing.html", 
                                       {"request": request,

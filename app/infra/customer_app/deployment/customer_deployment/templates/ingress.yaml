@@ -8,7 +8,7 @@ spec:
     - host: create.customer.apps.local # The hostname you will use to access the service
       http:
         paths:
-          - path: /customer/{{ .Values.config.name }}
+          - path: /customer/{{ .Values.config.url_name }}
             pathType: Prefix
             backend:
               service:

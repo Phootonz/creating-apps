@@ -112,27 +112,25 @@ async def create_deployment(request: Request, create_app: CreateApp, db: Session
     customer = db.query(Customer).filter_by(name=create_app.name).first()
     client = HelmClient()
     
-    name = create_app.name.replace(" ", "")
+    name = create_app.name
+    url_name = name.replace(" ", "").lower()
     values = {
                 "config": {
                     "name": name,
-                    "motto": create_app.motto
+                    "motto": create_app.motto,
+                    "url_name": url_name
                 }
             }
- 
     chart_path = Path("./infra/customer_app/deployment/customer_deployment").resolve().as_posix()
-
-    # Fetch the chart from a local directory or a .tgz package path
     chart = await client.get_chart(chart_path)
-
         
     revision = await client.install_or_upgrade_release(
-        name, 
+        url_name, 
         chart,
         values
     )
 
-    print(f"Release '{name}' deployed/upgraded'. Status: {revision.status}")
+    print(f"Release '{url_name}' deployed/upgraded'. Status: {revision.status}")
     return JSONResponse(create_app.model_dump(exclude=['key']))
 
 @app.post("/status", response_class=JSONResponse, status_code=status.HTTP_204_NO_CONTENT)
@@ -216,7 +214,7 @@ async def deployment_status(name, db: Session):
                 yield f"data: {json.dumps(state)}\n\n"
                 if customer:
                     db.refresh(customer)
-                await sleep(5)
+                await sleep(3)
     finally:
         db.close()
 

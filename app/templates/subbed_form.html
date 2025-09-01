@@ -40,7 +40,7 @@
     };
 
     // Connect to SSE stream
-    const es = new EventSource("/deployment/{{name}}".replaceAll(" ", ""));
+    const es = new EventSource("/deployment/{{name}}".replaceAll(" ", "").toLowerCase());
     es.onopen = () => log("[SSE] connected");
     es.onmessage = (evt) => {
       // default 'message' events
