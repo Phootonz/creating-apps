@@ -21,5 +21,7 @@ jobs:
         python -m pip install --upgrade pip
         # pip install -r requirements.txt
         # github.event.issue.body
+    - name: Update Customer Status
+      run: python infra/update_status.py "deploying"
     - name: Run Python script
       run: python infra/deploy.py "${{ github.event.issue.body }}" "${{ secrets.API_KEY }}"

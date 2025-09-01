@@ -25,13 +25,11 @@
   <script>
     const log = (msg) => {
       const pre = document.getElementById("status");
-      const dp = document.getElementById("deploying");
-      console.log(msg)
+      const init = document.getElementById("initilizing");
       if (msg.status) {
-        console.log(dp)
-        if (msg.status == 'deploying') {
-          if (dp && dp.innerText === "deploying...") {
-            pre.innerHTML = `<span id="deploying" class="bg-amber-400 text-white rounded p-2">${msg.status}..<span>`;
+        if (msg.status == 'initilizing') {
+          if (init && init.innerText === "initilizing...") {
+            pre.innerHTML = `<span id="initilizing" class="bg-amber-400 text-white rounded p-2">${msg.status}..<span>`;
           } else {
             pre.innerHTML = `<span id="${msg.status}" class="bg-amber-400 text-white rounded p-2">${msg.status}...<span>`;
           }

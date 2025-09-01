@@ -11,7 +11,7 @@ from asyncio import sleep
 from github import Github
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, Session
-from .models.forms import CreateApp
+from .models.forms import CreateApp, Status
 from .models.db import Base, Customer
 from dotenv import load_dotenv
 
@@ -54,8 +54,8 @@ def get_db():
         db.close()
 
 
-async def require_form_passkey(create_app: CreateApp ):
-    if not FAK or create_app.key != FAK:
+async def require_form_passkey(mode_with_key):
+    if not FAK or mode_with_key.key != FAK:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorized",
@@ -102,17 +102,30 @@ async def create_submit(request: Request, create_app: CreateApp = Form(...)):
         context={"request": request, "name": create_app.name}
     )
     
-@app.post("/deploy", response_class=HTMLResponse)
+@app.post("/deploy", response_class=JSONResponse)
 async def create_deployment(request: Request, create_app: CreateApp, db: Session = Depends(get_db)):
     await require_form_passkey(create_app)
     customer = Customer(**create_app.model_dump(exclude=['key']))
     db.add(customer)
     try:
         db.commit()
-    except:
+    except Exception:
         return JSONResponse({"error": "Only a single customer with the same name can exist", "code": 1})
     db.refresh(customer)
     return JSONResponse(create_app.model_dump(exclude=['key']))
+
+@app.post("/status", response_class=JSONResponse)
+async def create_deployment(request: Request, status: Status, db: Session = Depends(get_db)):
+    await require_form_passkey(status)
+    customer = db.query(Customer).filter_by(name=status.name).first()
+    if not customer:
+        JSONResponse({"error": "Customer does not exist", "code": 2})
+    try:
+        db.commit()
+    except Exception:
+        return JSONResponse({"error": "Only a single customer with the same name can exist", "code": 1})
+    db.refresh(customer)
+    return JSONResponse(status.model_dump(exclude=['key']))
 
 
 @app.get("/instances")
@@ -144,7 +157,7 @@ async def instances():
         )
 
 async def deployment_status(name, db):
-    status = {"status": "deploying"}
+    status = {"status": "initilizing"}
     for _ in range(200):
         customer = db.query(Customer).filter_by(name=name).first()
         if customer:

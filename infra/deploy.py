@@ -20,5 +20,5 @@ if __name__ == "__main__":
     except IndexError:
         print("Some of your info was messed up")
         # output to error stream
-    print(app_params)
+
     create_app(**app_params, secret=secret)
