@@ -1,6 +1,7 @@
 import os
 import json
 import yaml
+import logging
 from typing import Annotated
 from fastapi import FastAPI, Request, Depends, Form, HTTPException, status
 from fastapi.responses import StreamingResponse, HTMLResponse, FileResponse, JSONResponse
@@ -94,8 +95,9 @@ async def create_form(request: Request):
 @app.post("/", response_class=HTMLResponse)
 async def create_submit(request: Request, create_app: CreateApp = Form(...)):
     await require_form_passkey(create_app)
+
     if not github_webhook(create_app):
-        #return a fai lure response
+        #return a failure response
         return
     return templates.TemplateResponse(
         "subbed_form.html", 
@@ -114,18 +116,43 @@ async def create_deployment(request: Request, create_app: CreateApp, db: Session
     db.refresh(customer)
     return JSONResponse(create_app.model_dump(exclude=['key']))
 
-@app.post("/status", response_class=JSONResponse)
-async def create_deployment(request: Request, status: Status, db: Session = Depends(get_db)):
-    await require_form_passkey(status)
-    customer = db.query(Customer).filter_by(name=status.name).first()
+@app.post("/status", response_class=JSONResponse, status_code=status.HTTP_204_NO_CONTENT)
+async def create_deployment(request: Request, state: Status, db: Session = Depends(get_db)):
+    await require_form_passkey(state)
+    customer = db.query(Customer).filter_by(name=state.name).first()
     if not customer:
-        JSONResponse({"error": "Customer does not exist", "code": 2})
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Could not find that customer",
+        )
+        
+    customer.status = state.status
     try:
         db.commit()
-    except Exception:
-        return JSONResponse({"error": "Only a single customer with the same name can exist", "code": 1})
+    except Exception as err:
+        logging.error(err)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="unable to update the state",
+        )
     db.refresh(customer)
-    return JSONResponse(status.model_dump(exclude=['key']))
+    return JSONResponse(state.model_dump(exclude=['key']))
+
+@app.post("/create", response_class=JSONResponse, status_code=status.HTTP_201_CREATED)
+async def create_deployment(request: Request, create_app: CreateApp, db: Session = Depends(get_db)):
+    await require_form_passkey(create_app)
+    customer = Customer(name=create_app.name, motto=create_app.motto, status='deploying')
+    db.add(customer)
+    try:
+        db.commit()
+    except Exception as err:
+        logging.error(err)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Some info was incorrect, maybe the customer already exists",
+        )
+    db.refresh(customer)
+    return JSONResponse(create_app.model_dump(exclude=['key'])), 201
 
 
 @app.get("/instances")
@@ -157,14 +184,15 @@ async def instances():
         )
 
 async def deployment_status(name, db):
-    status = {"status": "initilizing"}
     for _ in range(200):
         customer = db.query(Customer).filter_by(name=name).first()
+        state = {"status": "initilizing"}
         if customer:
-            print(customer)
-            status["status"] = customer.status
-        yield f"data: {json.dumps(status)}\n\n"
-        await sleep(2)
+            print(customer.status)
+            state["status"] = customer.status
+        yield f"data: {json.dumps(state)}\n\n"
+        db.refresh(customer)
+        await sleep(1)
 
 @app.get("/deployment/{name}")
 async def deployment(name,  db: Session = Depends(get_db)):

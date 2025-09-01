@@ -12,12 +12,12 @@ RUN poetry install --only main --no-root
 COPY ./app /app
 
 FROM python:3.13-slim AS runtime
-RUN useradd -ms /bin/bash appuser
+RUN groupadd -r appuser && useradd -r -g appuser appuser
 RUN apt update && apt-get install curl -y vim
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 COPY --from=builder /app /app
-
+RUN chown -R appuser:appuser /app
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
@@ -35,4 +35,4 @@ RUN curl -fsSL https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz | tar
 
 EXPOSE 8080
 USER appuser
-CMD ["fastapi", "run", "--port", "8080", "form.py"]
+CMD ["python", "-u", "-m", "fastapi", "run", "--port", "8080", "form.py"]

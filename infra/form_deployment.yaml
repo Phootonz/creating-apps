@@ -5,7 +5,7 @@ metadata:
   labels:
     app: create-customer-sites
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: create-customer-sites
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: create-customer-sites
-        image: create-customer-sites:17
+        image: create-customer-sites:25
         ports:
         - containerPort: 8080
         envFrom:

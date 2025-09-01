@@ -25,17 +25,16 @@
   <script>
     const log = (msg) => {
       const pre = document.getElementById("status");
-      const init = document.getElementById("initilizing");
+      const state = document.getElementById(msg.status);
       if (msg.status) {
-        if (msg.status == 'initilizing') {
-          if (init && init.innerText === "initilizing...") {
-            pre.innerHTML = `<span id="initilizing" class="bg-amber-400 text-white rounded p-2">${msg.status}..<span>`;
+          if (state && state.innerText.includes('...')) {
+            pre.innerHTML = `<span id="${msg.status}" class="bg-amber-400 text-white rounded p-2">${msg.status}..<span>`;
           } else {
             pre.innerHTML = `<span id="${msg.status}" class="bg-amber-400 text-white rounded p-2">${msg.status}...<span>`;
           }
-        }
 
       } else if (msg.error) {
+        console.log(msg.error)
         pre.innerHTML = `<div>${msg.error}<div>`;
       }
     };
