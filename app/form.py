@@ -160,6 +160,10 @@ async def create_deployment(request: Request, state: Status, db: Session = Depen
 @app.post("/create", response_class=JSONResponse, status_code=status.HTTP_201_CREATED)
 async def create_deployment(request: Request, create_app: CreateApp, db: Session = Depends(get_db)):
     await require_form_passkey(create_app)
+    customer = db.query(Customer).filter_by(name=create_app.name).first()
+    if customer:
+        return JSONResponse(create_app.model_dump(exclude=['key'])), 200
+    
     customer = Customer(name=create_app.name, motto=create_app.motto, status='db updated')
     db.add(customer)
     try:
