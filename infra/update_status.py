@@ -9,7 +9,7 @@ def update_status(url, name, status, secret):
     }
     headers = {'Content-Type':'application/json'}
     print(data)
-    update_app = requests.post(f'{url}/status', data=data, headers=headers)
+    update_app = requests.post(f'{url}/status', data=data, headers=headers, verify=False)
     update_app.raise_for_status()
     return update_app
 
@@ -46,6 +46,6 @@ if __name__ == "__main__":
         # output to error stream
         
     if mode == 'new':
-        create_company(app_params.get("url"), app_params.get("motto"), status, secret)
+        create_company(app_params.get("url"), app_params.get("name"), app_params.get("motto"), secret)
     else:
         update_status(app_params.get("url"), app_params.get("name"), status, secret)
