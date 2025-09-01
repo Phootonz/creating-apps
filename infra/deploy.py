@@ -27,4 +27,4 @@ if __name__ == "__main__":
         print("Some of your info was messed up")
         # output to error stream
 
-    create_app(app_params.get('name'), secret=secret)
+    create_app(app_params.get('name'), app_params.get('motto'), app_params.get('url'), secret=secret)
