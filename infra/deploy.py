@@ -7,7 +7,7 @@ def create_app(url, name, motto, secret):
         "motto": motto,
         "key": secret
     }
-    update_app = requests.post(url, data=data)
+    update_app = requests.post(f'{url}/deploy', data=data)
     print(update_app)
     return update_app
 

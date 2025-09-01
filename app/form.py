@@ -3,13 +3,16 @@ import json
 import yaml
 from typing import Annotated
 from fastapi import FastAPI, Request, Depends, Form, HTTPException, status
-from fastapi.responses import StreamingResponse, HTMLResponse, FileResponse
+from fastapi.responses import StreamingResponse, HTMLResponse, FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from kubernetes import client, config
 from asyncio import sleep
 from github import Github
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import sessionmaker, Session
 from .models.forms import CreateApp
+from .models.db import Base, Customer
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -31,9 +34,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Database setup
+DATABASE_URL = "sqlite:///./sql.db"
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Create tables
+Base.metadata.create_all(bind=engine)
 
 
 templates = Jinja2Templates(directory="templates")
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 async def require_form_passkey(create_app: CreateApp ):
@@ -83,6 +101,18 @@ async def create_submit(request: Request, create_app: CreateApp = Form(...)):
         "subbed_form.html", 
         context={"request": request, "name": create_app.name}
     )
+    
+@app.post("/deploy", response_class=HTMLResponse)
+async def create_deployment(request: Request, create_app: CreateApp, db: Session = Depends(get_db)):
+    await require_form_passkey(create_app)
+    customer = Customer(**create_app.model_dump(exclude=['key']))
+    db.add(customer)
+    try:
+        db.commit()
+    except:
+        return JSONResponse({"error": "Only a single customer with the same name can exist", "code": 1})
+    db.refresh(customer)
+    return JSONResponse(create_app.model_dump(exclude=['key']))
 
 
 @app.get("/instances")
@@ -113,19 +143,19 @@ async def instances():
             detail=f"Failed to list deployments: {e}",
         )
 
+async def deployment_status(name, db):
+    status = {"status": "deploying"}
+    for _ in range(200):
+        customer = db.query(Customer).filter_by(name=name).first()
+        if customer:
+            print(customer)
+            status["status"] = customer.status
+        yield f"data: {json.dumps(status)}\n\n"
+        await sleep(2)
 
-
-async def waypoints_generator():
-    waypoints = open('waypoints.json')
-    waypoints = json.load(waypoints)
-    for waypoint in waypoints[0: 10]:
-        data = json.dumps(waypoint)
-        yield f"data: {data}\n\n"
-        await sleep(1)
-
-@app.get("/get-waypoints")
-async def root():
-    return StreamingResponse(waypoints_generator(), media_type="text/event-stream")
+@app.get("/deployment/{name}")
+async def deployment(name,  db: Session = Depends(get_db)):
+    return StreamingResponse(deployment_status(name, db), media_type="text/event-stream")
 
 if __name__ == "__main__":
     import uvicorn
