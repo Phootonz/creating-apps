@@ -8,12 +8,13 @@ def update_status(url, name, status, secret):
         "key": secret
     }
     update_app = requests.post(f'{url}/status', data=data)
+    update_app.raise_for_status()
     return update_app
 
 if __name__ == "__main__":
     status = sys.argv[1]
     issue_body = sys.argv[2]
-    secret = sys.arg[3]
+    secret = sys.argv[3]
 
     tokens = issue_body.split('\n')
     try:
