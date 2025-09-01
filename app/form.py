@@ -141,7 +141,7 @@ async def create_deployment(request: Request, state: Status, db: Session = Depen
 @app.post("/create", response_class=JSONResponse, status_code=status.HTTP_201_CREATED)
 async def create_deployment(request: Request, create_app: CreateApp, db: Session = Depends(get_db)):
     await require_form_passkey(create_app)
-    customer = Customer(name=create_app.name, motto=create_app.motto, status='deploying')
+    customer = Customer(name=create_app.name, motto=create_app.motto, status='db updated')
     db.add(customer)
     try:
         db.commit()
@@ -192,7 +192,7 @@ async def deployment_status(name, db):
             state["status"] = customer.status
         yield f"data: {json.dumps(state)}\n\n"
         db.refresh(customer)
-        await sleep(1)
+        await sleep(3)
 
 @app.get("/deployment/{name}")
 async def deployment(name,  db: Session = Depends(get_db)):

@@ -20,7 +20,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r infra/requirements.txt
-    - name: Update Customer Status
-      run: python infra/update_status.py "deploying" "${{ github.event.issue.body }}" "${{ secrets.API_KEY }}"
+    - name: Add customer to db
+      run: python infra/update_status.py "deploying" "${{ github.event.issue.body }}" "${{ secrets.API_KEY }}" new
     - name: deploy new chart
       run: python infra/deploy.py "${{ github.event.issue.body }}" "${{ secrets.API_KEY }}"
