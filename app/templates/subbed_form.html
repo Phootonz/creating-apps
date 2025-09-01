@@ -38,7 +38,7 @@
           if (msg.status == 'deployed') {
             pre.innerHTML = `<span id="${msg.status}" class="bg-green-400 text-white rounded p-2">${msg.status}<span>`;
             const customerLink = document.getElementById("customer_link");
-            customerLink.innerHTML = `<div>Click <a href="https://logically-evolving-buck.ngrok-free.app/customer/{{name}}".replaceAll(" ", "").toLowerCase()" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">here</a> to visit your brand new website!</div>`
+            customerLink.innerHTML = `<div>Click <a href="https://logically-evolving-buck.ngrok-free.app/customer/{{name.replace(' ', '').lower()}}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">here</a> to visit your brand new website!</div>`
             customerLink.style.display = 'block'
           }
       } else if (msg.error) {

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: create-customer-sites
-        image: create-customer-sites:36
+        image: create-customer-sites:37
         ports:
         - containerPort: 8080
         envFrom:
