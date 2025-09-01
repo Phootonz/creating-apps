@@ -1023,6 +1023,21 @@ files = [
 windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
+name = "pyhelm3"
+version = "0.4.0"
+description = "Python library for managing Helm releases using Helm 3."
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyhelm3-0.4.0-py3-none-any.whl", hash = "sha256:6f608891fbe8db9b8015b839f29524dccd6eade0da879820690d71de9c3f2f8d"},
+    {file = "pyhelm3-0.4.0.tar.gz", hash = "sha256:7ce688cab8e12df5240641774c36acfd3cad6d9a6325781bc7b5a354e522c594"},
+]
+
+[package.dependencies]
+pydantic = "*"
+pyyaml = "*"
+
+[[package]]
 name = "pyjwt"
 version = "2.10.1"
 description = "JSON Web Token implementation in Python"
@@ -1957,4 +1972,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.13"
-content-hash = "9a0bda3ef04d6d45fc944fc26972c5ec83a19d010088ed7ee690e10a2aaadc94"
+content-hash = "81d445c0a877d1c13260bd2f5ce547895021b9af97d02e5d8ebc7bbd9dfa53db"

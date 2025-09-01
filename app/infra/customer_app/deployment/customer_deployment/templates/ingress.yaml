@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "customer_deployment.fullname" .}}
+spec:
+  ingressClassName: nginx 
+  rules:
+    - host: create.customer.apps.local # The hostname you will use to access the service
+      http:
+        paths:
+          - path: /customer/{{ .Values.config.name }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "customer_deployment.fullname" .}} # Name of your Kubernetes Service
+                port:
+                  number: 8080 # Port of the Service

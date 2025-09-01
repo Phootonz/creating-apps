@@ -2,6 +2,8 @@ import os
 import json
 import yaml
 import logging
+import tempfile
+from pathlib import Path
 from typing import Annotated
 from fastapi import FastAPI, Request, Depends, Form, HTTPException, status
 from fastapi.responses import StreamingResponse, HTMLResponse, FileResponse, JSONResponse
@@ -15,6 +17,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from .models.forms import CreateApp, Status
 from .models.db import Base, Customer
 from dotenv import load_dotenv
+from pyhelm3 import Client as HelmClient
 
 load_dotenv()
 
@@ -86,7 +89,6 @@ def github_webhook(create_app: CreateApp):
     print(f"Successfully created issue: {issue.html_url}")
     return True
 
-
 @app.get("/")
 async def create_form(request: Request):
     return templates.TemplateResponse("form.html", {"request": request})
@@ -107,13 +109,30 @@ async def create_submit(request: Request, create_app: CreateApp = Form(...)):
 @app.post("/deploy", response_class=JSONResponse)
 async def create_deployment(request: Request, create_app: CreateApp, db: Session = Depends(get_db)):
     await require_form_passkey(create_app)
-    customer = Customer(**create_app.model_dump(exclude=['key']))
-    db.add(customer)
-    try:
-        db.commit()
-    except Exception:
-        return JSONResponse({"error": "Only a single customer with the same name can exist", "code": 1})
-    db.refresh(customer)
+    customer = db.query(Customer).filter_by(name=create_app.name).first()
+    client = HelmClient()
+    
+    name = create_app.name.replace(" ", "")
+    values = {
+                "config": {
+                    "name": name,
+                    "motto": create_app.motto
+                }
+            }
+ 
+    chart_path = Path("./infra/customer_app/deployment/customer_deployment").resolve().as_posix()
+
+    # Fetch the chart from a local directory or a .tgz package path
+    chart = await client.get_chart(chart_path)
+
+        
+    revision = await client.install_or_upgrade_release(
+        name, 
+        chart,
+        values
+    )
+
+    print(f"Release '{name}' deployed/upgraded'. Status: {revision.status}")
     return JSONResponse(create_app.model_dump(exclude=['key']))
 
 @app.post("/status", response_class=JSONResponse, status_code=status.HTTP_204_NO_CONTENT)
@@ -189,7 +208,6 @@ async def deployment_status(name, db: Session):
                 customer = db.query(Customer).filter_by(name=name).first()
                 state = {"status": "initilizing"}
                 if customer:
-                    print(customer.status)
                     state["status"] = customer.status
                 yield f"data: {json.dumps(state)}\n\n"
                 if customer:

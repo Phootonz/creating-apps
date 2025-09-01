@@ -14,6 +14,7 @@ pydantic = "^2.11.7"
 pygithub = "^2.7.0"
 python-dotenv = "^1.1.1"
 sqlalchemy = "^2.0.43"
+pyhelm3 = "^0.4.0"
 
 
 [build-system]
