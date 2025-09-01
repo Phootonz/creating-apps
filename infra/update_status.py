@@ -7,7 +7,9 @@ def update_status(url, name, status, secret):
         "status": status,
         "key": secret
     }
-    update_app = requests.post(f'{url}/status', data=data)
+    headers = {'Content-Type':'application/json'}
+    print(data)
+    update_app = requests.post(f'{url}/status', data=data, headers=headers)
     update_app.raise_for_status()
     return update_app
 
@@ -17,7 +19,7 @@ if __name__ == "__main__":
     secret = sys.argv[3]
 
     tokens = issue_body.split('\n')
-    print(tokens)
+    print(f"issue tokens: {tokens}")
     try:
         app_params = {}
         for item in tokens:
